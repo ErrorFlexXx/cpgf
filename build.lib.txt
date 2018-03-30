@@ -1,0 +1,185 @@
+set(TARGET_LIB libCpgf)
+set(OUTNAME_LIB cpgf)
+
+set(SRC_LUA_BIND )
+set(SRC_V8_BIND )
+set(SRC_GLUT )
+
+if(${HAS_LUA})
+	set(SRC_LUA_BIND
+		${SRC_PATH}/scriptbind/gluabind.cpp
+		${SRC_PATH}/scriptbind/gluarunner.cpp
+	)
+endif(${HAS_LUA})
+
+if(${HAS_V8})
+	set(SRC_V8_BIND
+		${SRC_PATH}/scriptbind/gv8bind.cpp
+		${SRC_PATH}/scriptbind/gv8runner.cpp
+	)
+endif(${HAS_V8})
+
+if(${HAS_PYTHON})
+	set(SRC_PYTHON_BIND
+		${SRC_PATH}/scriptbind/gpythonbind.cpp
+		${SRC_PATH}/scriptbind/gpythonrunner.cpp
+	)
+endif(${HAS_PYTHON})
+
+if(${HAS_SPIDERMONKEY})
+	set(SRC_SPIDERMONKEY_BIND
+		${SRC_PATH}/scriptbind/gspidermonkeybind.cpp
+		${SRC_PATH}/scriptbind/gspidermonkeyrunner.cpp
+	)
+endif(${HAS_SPIDERMONKEY})
+
+set(SRC_ROOT
+	${SRC_PATH}/gapiutil.cpp
+	${SRC_PATH}/glifecycle.cpp
+	${SRC_PATH}/gmemorypool.cpp
+	${SRC_PATH}/gexception.cpp
+	${SRC_PATH}/gmetaannotation.cpp
+	${SRC_PATH}/gmetaapi.cpp
+	${SRC_PATH}/gmetaapiutil.cpp
+	${SRC_PATH}/gmetaclass.cpp
+	${SRC_PATH}/gmetaclasstraveller.cpp
+	${SRC_PATH}/gmetacommon.cpp
+	${SRC_PATH}/gmetaenum.cpp
+	${SRC_PATH}/gmetaextendtype.cpp
+	${SRC_PATH}/gmetafield.cpp
+	${SRC_PATH}/gmetafundamental.cpp
+	${SRC_PATH}/gmetamethod.cpp
+	${SRC_PATH}/gmetaoperator.cpp
+	${SRC_PATH}/gmetaproperty.cpp
+	${SRC_PATH}/gmetamodule.cpp
+	${SRC_PATH}/gmetatype.cpp
+	${SRC_PATH}/gstringutil.cpp
+	${SRC_PATH}/gvariant.cpp
+)
+
+set(SRC_SCRIPTBIND
+	${SRC_PATH}/scriptbind/gbindcommon.cpp
+	${SRC_PATH}/scriptbind/gbindcontext.cpp
+	${SRC_PATH}/scriptbind/gbindconverttoscript.cpp
+	${SRC_PATH}/scriptbind/gbindgluedata.cpp
+	${SRC_PATH}/scriptbind/gbindmetamap.cpp
+	${SRC_PATH}/scriptbind/gbindmethods.cpp
+	${SRC_PATH}/scriptbind/gbindobject.cpp
+	
+	${SRC_PATH}/scriptbind/gscriptbind.cpp
+	${SRC_PATH}/scriptbind/gscriptbindapi.cpp
+	${SRC_PATH}/scriptbind/gscriptbindutil.cpp
+	${SRC_PATH}/scriptbind/gscriptbuiltinlibrary.cpp
+	${SRC_PATH}/scriptbind/gscriptlibraryapi.cpp
+	${SRC_PATH}/scriptbind/gscriptrunner.cpp
+	${SRC_PATH}/scriptbind/gscriptservice.cpp
+	${SRC_PATH}/scriptbind/gscriptvalue.cpp
+	${SRC_PATH}/scriptbind/gscriptwrapper.cpp
+
+	${SRC_LUA_BIND}
+	${SRC_V8_BIND}
+	${SRC_PYTHON_BIND}
+	${SRC_SPIDERMONKEY_BIND}
+)
+
+set(SRC_METAUTILITY
+	${SRC_PATH}/metautility/gmetabytearray.cpp
+	${SRC_PATH}/metautility/gmetaobjectarray.cpp
+	${SRC_PATH}/metautility/gmetadebug.cpp
+	${SRC_PATH}/metautility/gmetacore.cpp
+)
+
+set(SRC_METATRAITS
+	${SRC_PATH}/metatraits/gmetaconverter_string.cpp
+	${SRC_PATH}/metatraits/gmetaconverter_widestring.cpp
+	${SRC_PATH}/metatraits/gmetaserializer_array.cpp
+	${SRC_PATH}/metatraits/gmetaserializer_string.cpp
+	${SRC_PATH}/metatraits/gmetaserializer_trapall.cpp
+	${SRC_PATH}/metatraits/gmetaobjectlifemanager.cpp
+	${SRC_PATH}/metatraits/gmetaobjectlifemanager_iobject.cpp
+)
+
+set(SRC_SERIALIZATION
+	${SRC_PATH}/serialization/gmetaarchivecommon.cpp
+	${SRC_PATH}/serialization/gmetaarchivereader.cpp
+	${SRC_PATH}/serialization/gmetaarchivetypemap.cpp
+	${SRC_PATH}/serialization/gmetaarchivewriter.cpp
+	${SRC_PATH}/serialization/gmetastorage_json.cpp
+	${SRC_PATH}/serialization/gmetastorage_textstream.cpp
+	${SRC_PATH}/serialization/gmetastorage_xml.cpp
+)
+
+set(SRC_TWEEN
+	${SRC_PATH}/tween/gtween.cpp
+	${SRC_PATH}/tween/gtweenlist.cpp
+	${SRC_PATH}/tween/gtweencommon.cpp
+	${SRC_PATH}/tween/gtimeline.cpp
+)
+
+set(SRC_THIRDPARTY_JSONCPP
+	${SRC_PATH}/thirdparty/jsoncpp/json_reader.cpp
+	${SRC_PATH}/thirdparty/jsoncpp/json_value.cpp
+	${SRC_PATH}/thirdparty/jsoncpp/json_writer.cpp
+)
+
+set(SRC_LIB
+	${SRC_ROOT}
+	${SRC_SCRIPTBIND}
+	${SRC_METAUTILITY}
+	${SRC_METATRAITS}
+	${SRC_SERIALIZATION}
+	${SRC_TWEEN}
+
+	${SRC_THIRDPARTY_JSONCPP}
+)
+
+SOURCE_GROUP(src FILES ${SRC_ROOT})
+SOURCE_GROUP(src\\scriptbind FILES ${SRC_SCRIPTBIND})
+SOURCE_GROUP(src\\metautility FILES ${SRC_METAUTILITY})
+SOURCE_GROUP(src\\metatraits FILES ${SRC_METATRAITS})
+SOURCE_GROUP(src\\serialization FILES ${SRC_SERIALIZATION})
+SOURCE_GROUP(src\\tween FILES ${SRC_TWEEN})
+SOURCE_GROUP(src\\thirdparty\\jsoncpp FILES ${SRC_THIRDPARTY_JSONCPP})
+
+
+include_directories(${INCLUDE_PATH})
+
+if(${HAS_LUA})
+	include_directories(${LUA_INC})
+endif(${HAS_LUA})
+
+if(${HAS_V8})
+	include_directories(${V8_INC})
+endif(${HAS_V8})
+
+if(${HAS_PYTHON})
+	include_directories(${PYTHON_INC})
+endif(${HAS_PYTHON})
+
+if(${HAS_SPIDERMONKEY})
+	include_directories(${SPIDERMONKEY_INC})
+endif(${HAS_SPIDERMONKEY})
+
+if(LIB_SHARED)
+	add_library(
+		${TARGET_LIB}
+		SHARED
+		${SRC_LIB}
+	)
+else()
+	add_library(
+		${TARGET_LIB}
+		STATIC
+		${SRC_LIB}
+	)
+endif()
+
+add_definitions(${SPIDERMONKEY_DEFINE})
+
+set_target_properties(
+	${TARGET_LIB}
+	PROPERTIES
+	OUTPUT_NAME ${OUTNAME_LIB}
+	ARCHIVE_OUTPUT_DIRECTORY ${LIB_PATH}
+	COMPILE_DEFINITIONS "ENABLE_LUA=${HAS_LUA};ENABLE_V8=${HAS_V8};ENABLE_PYTHON=${HAS_PYTHON};ENABLE_SPIDERMONKEY=${HAS_SPIDERMONKEY};ENABLE_BOOST=${HAS_BOOST}"
+)
