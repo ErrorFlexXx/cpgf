@@ -105,7 +105,7 @@ endif()
 if(${HAS_PYTHON})
 	
 	set(	PYTHON_INC
-			${CMAKE_CURRENT_BINARY_DIR}/lib/Python-2.7.6/Include
+			${CMAKE_CURRENT_BINARY_DIR}/lib/Python-2.7.13/Include
 			${CMAKE_CURRENT_BINARY_DIR}/lib/python-cmake-buildsystem/bin
 		)
 
