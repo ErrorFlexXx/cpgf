@@ -43,7 +43,7 @@ enum class GVariantType : GVtType {
 	vtFundamentalEnd = vtLongDouble,
 
 	vtObject = 31, // is equivalent to unkown type
-	
+
 	// special types
 	vtInterfaceBegin = 32,
 	vtShadow = vtInterfaceBegin,
@@ -62,7 +62,7 @@ enum class GVariantType : GVtType {
 	byPointer = 0x1000,
 	byLvalueReference = 0x2000,
 	byRvalueReference = 0x4000,
-	
+
 	maskByPointerAndReference = byPointer | byLvalueReference | byRvalueReference,
 	maskByReference = byLvalueReference | byRvalueReference,
 };
@@ -106,13 +106,13 @@ struct GVariantData
 		std::int32_t valueInt32;
 		std::int64_t valueInt64;
 		GVariantInteger valueInt;
-	
+
 		float valueFloat;
 		double valueDouble;
 		long double valueLongDouble;
-	
+
 		void * pointer;
-		
+
 		cpgf::IObject * valueInterface;
 
 	};
@@ -183,27 +183,27 @@ inline GVariantType vtGetBaseType(const GVarTypeData & data)
 
 inline int vtGetPointers(const GVarTypeData & data)
 {
-	return data.sizeAndPointers & 0x0f;
+	return data.sizeAndPointers & 0x07;
 }
 
 inline void vtSetPointers(GVarTypeData & data, unsigned int pointers)
 {
-	data.sizeAndPointers = static_cast<uint8_t>((data.sizeAndPointers & 0xf0) | (pointers & 0x0f));
+	data.sizeAndPointers = static_cast<uint8_t>((data.sizeAndPointers & 0xf8) | (pointers & 0x07));
 }
 
 inline int vtGetSize(const GVarTypeData & data)
 {
-	return (data.sizeAndPointers >> 4) & 0x0f;
+	return (data.sizeAndPointers >> 3) & 0x1f;
 }
 
 inline void vtSetSize(GVarTypeData & data, unsigned int size)
 {
-	data.sizeAndPointers = static_cast<uint8_t>(((size & 0x0f) << 4) | (data.sizeAndPointers & 0x0f));
+	data.sizeAndPointers = static_cast<uint8_t>(((size & 0x1f) << 3) | (data.sizeAndPointers & 0x07));
 }
 
 inline void vtSetSizeAndPointers(GVarTypeData & data, unsigned int size, unsigned int pointer)
 {
-	data.sizeAndPointers = static_cast<uint8_t>(((size & 0x0f) << 4) | (pointer & 0x0f));
+	data.sizeAndPointers = static_cast<uint8_t>(((size & 0x01f) << 3) | (pointer & 0x07));
 }
 
 inline bool vtIsInterface(const GVariantType vt) {
@@ -259,7 +259,7 @@ public:
 	{
 		return value;
 	}
-	
+
 	GVariant() : data() {
 	}
 
@@ -301,7 +301,7 @@ public:
 	~GVariant() {
 		variant_internal::releaseVariantData(this->data);
 	}
-	
+
 	GVariantType getType() const {
 		return (GVariantType)this->data.typeData.vt;
 	}
@@ -496,7 +496,7 @@ auto fromVariantData(const GVariantData & data)
 	)
 {
 	typedef typename variant_internal::VariantDecay<T>::Result U;
-	
+
 	return doFromVariantData<U, Policy>(data, typename variant_internal::VariantCastTagTraits<U>::Tag());
 }
 
@@ -649,4 +649,3 @@ void deduceVariantType(GVarTypeData & data)
 
 
 #endif
-

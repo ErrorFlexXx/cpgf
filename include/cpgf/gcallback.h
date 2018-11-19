@@ -54,7 +54,7 @@ struct SizeOfCallbackBase {
 };
 
 struct SizeOfCallbackSon : public SizeOfCallbackBase {
-	virtual void a(int) { (void)a(0); }
+	virtual void a(int) { (void)(0); }
 };
 
 constexpr auto BufferSize = sizeof(&SizeOfCallbackSon::a) + sizeof(SizeOfCallbackBase);
@@ -128,23 +128,6 @@ struct GCheckReturnType <void, Actural>
 	static constexpr bool value = true;
 };
 
-template <typename T>
-struct GReturnEmptyValue
-{
-	static T invoke() {
-		return (T)(*(typename std::conditional<std::is_void<T>::value, int, T>::type *)0);
-		//return T(); // this causes compile error if T has no default constructor
-	}
-};
-
-template <typename T>
-struct GReturnEmptyValue <T &>
-{
-	static T & invoke() {
-		return *(T *)0;
-	}
-};
-
 template <typename RT, typename... Parameters>
 struct GCallbackBase
 {
@@ -158,7 +141,7 @@ public:
 	typedef void * (*GetObject)(ThisType * self);
 	typedef void (*SetObject)(ThisType * self, void * object);
 	typedef bool (*IsSame)(ThisType * self, void * other);
-	
+
 	struct CallbackVirtuals {
 		Destroy destroy;
 		Clone clone;
@@ -168,12 +151,12 @@ public:
 		// when isSame is called, "other" is guaranteed to be the same type of "self".
 		IsSame isSame;
 	};
-	
+
 	explicit GCallbackBase(const CallbackVirtuals * virtuals)
 		: virtuals(virtuals)
 	{
 	}
-	
+
 	const CallbackVirtuals * virtuals;
 };
 
@@ -184,38 +167,38 @@ private:
 	typedef GCallbackBase <RT, Parameters...> BaseType;
 	typedef BaseType super;
 	typedef GCallbackBaseFunc <Func, RT, Parameters...> ThisType;
-	
+
 	static void destroy(BaseType * self)
 	{
 		static_cast<ThisType *>(self)->~ThisType();
 	}
-	
+
 	static BaseType * clone(BaseType * self, void * buffer)
 	{
 		return allocateBase<ThisType>(buffer, *static_cast<ThisType *>(self));
 	}
-	
+
 	static RT invoker(BaseType * self, Parameters && ... parameters)
 	{
 		return (RT)((*&(static_cast<ThisType *>(self)->func))(std::forward<Parameters>(parameters)...));
 	}
-	
+
 	static void * getObject(BaseType * /*self*/)
 	{
 		return nullptr;
 	}
-	
+
 	static void setObject(BaseType * /*self*/, void * /*object*/)
 	{
 	}
-	
+
 	static bool isSame(BaseType * self, void * other)
 	{
 		using namespace callback_internal;
 
 		return callbackCheckEqual(static_cast<ThisType *>(self)->func, static_cast<ThisType *>(other)->func);
 	}
-	
+
 	static typename super::CallbackVirtuals * doGetVirtuals() {
 		static typename super::CallbackVirtuals callbackVirtuals = {
 			&destroy,
@@ -225,7 +208,7 @@ private:
 			&setObject,
 			&isSame
 		};
-		
+
 		return &callbackVirtuals;
 	}
 
@@ -246,17 +229,17 @@ private:
 	typedef GCallbackBase <RT, Parameters...> BaseType;
 	typedef BaseType super;
 	typedef GCallbackBaseMember <Instance, OT, Func, RT, Parameters...> ThisType;
-	
+
 	static void destroy(BaseType * self)
 	{
 		static_cast<ThisType *>(self)->~ThisType();
 	}
-	
+
 	static BaseType * clone(BaseType * self, void * buffer)
 	{
 		return allocateBase<ThisType>(buffer, *static_cast<ThisType *>(self));
 	}
-	
+
 	static RT invoker(BaseType * self, Parameters && ... parameters)
 	{
 		return (RT)(
@@ -265,17 +248,17 @@ private:
 			)(std::forward<Parameters>(parameters)...)
 		);
 	}
-	
+
 	static void * getObject(BaseType * self)
 	{
 		return (void *)callbackGetPointer(static_cast<ThisType *>(self)->instance);
 	}
-	
+
 	static void setObject(BaseType * self, void * object)
 	{
 		callbackSetPointer(static_cast<ThisType *>(self)->instance, object);
 	}
-	
+
 	static bool isSame(BaseType * self, void * other)
 	{
 		using namespace callback_internal;
@@ -283,7 +266,7 @@ private:
 		return callbackCheckEqual(static_cast<ThisType *>(self)->instance, static_cast<ThisType *>(other)->instance)
 			&& callbackCheckEqual(static_cast<ThisType *>(self)->func, static_cast<ThisType *>(other)->func);
 	}
-	
+
 	static typename super::CallbackVirtuals * doGetVirtuals() {
 		static typename super::CallbackVirtuals callbackVirtuals = {
 			&destroy,
@@ -293,7 +276,7 @@ private:
 			&setObject,
 			&isSame
 		};
-		
+
 		return &callbackVirtuals;
 	}
 
@@ -333,7 +316,7 @@ public:
 	GCallback() : base(nullptr)
 	{
 	}
-	
+
 	~GCallback()
 	{
 		this->doFreeBase();
@@ -384,19 +367,19 @@ public:
 		: base(other.base != nullptr ? other.base->virtuals->clone(other.base, (void *)this->buffer) : nullptr)
 	{
 	}
-	
+
 	GCallback(ThisType && other)
 		: base(other.base != nullptr ? other.base->virtuals->clone(other.base, (void *)this->buffer) : nullptr)
 	{
 	}
-	
+
 	GCallback & operator = (const ThisType & other)
 	{
 		if(this != &other) {
 			this->doFreeBase();
 			this->base = (other.base != nullptr ? other.base->virtuals->clone(other.base, (void *)this->buffer) : nullptr);
 		}
-		
+
 		return *this;
 	}
 
@@ -406,20 +389,20 @@ public:
 			return this->base->virtuals->invoker(this->base, std::forward<Parameters>(args)...);
 		}
 		else {
-			return callback_internal::GReturnEmptyValue<RT>::invoke();
+			throw std::bad_function_call();
 		}
 	}
-	
+
 	RT operator() (Parameters... args) const
 	{
 		if(this->base != nullptr) {
 			return this->base->virtuals->invoker(this->base, std::forward<Parameters>(args)...);
 		}
 		else {
-			return callback_internal::GReturnEmptyValue<RT>::invoke();
+			throw std::bad_function_call();
 		}
 	}
-	
+
 	void * getObject() const
 	{
 		if(this->base != nullptr) {
@@ -436,7 +419,7 @@ public:
 			this->base->virtuals->setObject(this->base, object);
 		}
 	}
-	
+
 	void clear() {
 		this->doFreeBase();
 	}
@@ -448,13 +431,13 @@ public:
 	operator bool() const {
 		return ! this->empty();
 	}
-	
+
 	bool operator == (const ThisType & other) const
 	{
 		if(this->base == other.base) {
 			return true;
 		}
-	
+
 		if(this->base != nullptr && other && other.base != nullptr) {
 			return this->base->virtuals->isSame(this->base, other.base);
 		}
@@ -467,7 +450,7 @@ public:
 	{
 		return ! this-> operator == (other);
 	}
-	
+
 private:
 	void doFreeBase()
 	{
